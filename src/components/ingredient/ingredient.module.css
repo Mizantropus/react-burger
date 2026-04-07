@@ -1,0 +1,11 @@
+.ingridient {
+  position: relative;
+  width: 46%;
+  text-align: center;
+}
+
+.ingridient__pricewrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
