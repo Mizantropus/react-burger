@@ -1,0 +1,25 @@
+.modal__box {
+  position: relative;
+  width: 720px;
+  max-height: 80vh;
+  margin: auto;
+  background-color: #1c1c21;
+  border-radius: 40px;
+  outline: none;
+}
+
+.modal__closeicon {
+  position: absolute;
+  top: 60px;
+  right: 40px;
+  z-index: 1000;
+  width: 24px;
+  height: 24px;
+  color: #fff;
+  cursor: pointer;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #f2f2f2;
+  }
+}

@@ -5,3 +5,47 @@
   padding-bottom: 20px;
   color: var(--text-primary-color);
 }
+
+.ingredients {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: hidden;
+}
+
+.edgeIngredient {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.middleIngredients {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.middleIngredient {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bottomWrap {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 40px;
+}
+
+.priceInfo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.priceInfo__icon {
+  width: 35px;
+  height: 35px;
+}
