@@ -1,5 +1,8 @@
 import { Preloader } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useState } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
@@ -7,81 +10,75 @@ import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredi
 import { IngredientDetails } from '@components/ingredient-details/ingredient-details';
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
-import { API_URL } from '@utils/constants';
+import {
+  setIngredientDetails,
+  clearIngredientDetails,
+} from '@services/ingredientDetails';
+import { fetchIngredients } from '@services/ingredients';
+import { sendOrder } from '@services/order';
 
 import styles from './app.module.css';
 
 export const App = () => {
-  const [ingredients, setIngredients] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isModalOrderOpen, setIsModalOrderOpen] = useState(false);
   const [isModalIngredientOpen, setIsModalIngredientOpen] = useState(false);
-  const [currentIngredientDetails, setCurrentIngredientDetails] = useState(null);
+  const isSendingOrder = useSelector((state) => state.order.loading);
+
+  const dispatch = useDispatch();
+
+  const { ingredients, loading: isLoading } = useSelector((state) => state.ingredients);
 
   useEffect(() => {
-    (async () => {
-      setIsLoading(true);
-      try {
-        const res = await fetch(API_URL);
-        if (!res.ok) {
-          return Promise.reject(`Ошибка ${res.status}`);
-        }
-        const result = await res.json();
-        setIngredients(result.data);
-        setIsLoading(false);
-      } catch (err) {
-        setIsLoading(false);
-        console.error('error:' + err);
-      }
-    })();
-  }, []);
+    dispatch(fetchIngredients());
+  }, [dispatch]);
 
-  const onCreateOrderClick = () => {
+  const onCreateOrderClick = async () => {
+    await dispatch(sendOrder());
     setIsModalOrderOpen(true);
   };
 
   const onIngredientClick = (id) => {
     const ingredient = ingredients.find((ing) => ing._id === id);
+    dispatch(setIngredientDetails({ ...ingredient, image: ingredient.image_large }));
     setIsModalIngredientOpen(true);
+  };
 
-    setCurrentIngredientDetails({
-      ...ingredient,
-      image: ingredient.image_large,
-    });
+  const closeIngredientModal = () => {
+    setIsModalOrderOpen(false);
+    dispatch(clearIngredientDetails());
   };
 
   return (
     <div className={styles.app}>
       <AppHeader />
 
-      {!isLoading ? (
+      {isLoading || isSendingOrder ? (
+        <Preloader />
+      ) : (
         <>
           <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
             Соберите бургер
           </h1>
           <main className={`${styles.main} pl-5 pr-5`}>
-            <BurgerIngredients
-              ingredients={ingredients}
-              onIngredientClick={onIngredientClick}
-            />
-            <BurgerConstructor
-              ingredients={ingredients}
-              onCreateOrderClick={onCreateOrderClick}
-            />
+            <DndProvider backend={HTML5Backend}>
+              <BurgerIngredients
+                ingredients={ingredients}
+                onIngredientClick={onIngredientClick}
+              />
+              <BurgerConstructor onCreateOrderClick={onCreateOrderClick} />
+            </DndProvider>
           </main>
           {isModalIngredientOpen && (
             <Modal closeHandler={() => setIsModalIngredientOpen(false)}>
-              <IngredientDetails ingredient={currentIngredientDetails} />
+              <IngredientDetails />
             </Modal>
           )}
           {isModalOrderOpen && (
-            <Modal closeHandler={() => setIsModalOrderOpen(false)}>
+            <Modal closeHandler={closeIngredientModal}>
               <OrderDetails />
             </Modal>
           )}
         </>
-      ) : (
-        <Preloader />
       )}
     </div>
   );

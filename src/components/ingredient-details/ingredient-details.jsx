@@ -1,6 +1,11 @@
+import { useSelector } from 'react-redux';
+
 import styles from './ingredient-details.module.css';
 
-export const IngredientDetails = ({ ingredient }) => {
+export const IngredientDetails = () => {
+  const ingredient =
+    useSelector((state) => state.ingredientDetails.ingredientDetails) || {};
+
   return (
     <div className="pt-3 pb-5">
       <p className="mb-8 text text_type_main-large">Детали ингредиента</p>

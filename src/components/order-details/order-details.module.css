@@ -13,8 +13,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-
-  /* background-image: url('./tickBackground.svg'); */
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;

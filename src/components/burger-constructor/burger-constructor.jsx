@@ -4,57 +4,110 @@ import {
   CurrencyIcon,
   DragIcon,
 } from '@krgaa/react-developer-burger-ui-components';
+import { useDrop } from 'react-dnd';
+import { useDispatch, useSelector } from 'react-redux';
+
+import ConstructorArea from '@/components/constructor-area/constructor-area';
+import SortableWrap from '@components/sortable-wrap/sortable-wrap';
+import {
+  removeIngredient,
+  getTotalPriceSelector,
+  addIngredientById,
+} from '@services/burgerConstructor';
 
 import styles from './burger-constructor.module.css';
 
-export const BurgerConstructor = ({ ingredients, onCreateOrderClick }) => {
-  const edgeIngreds = ingredients.filter(({ type }) => type === 'bun');
-  const middleIngreds = ingredients.filter(({ type }) => type !== 'bun');
+export const BurgerConstructor = ({ onCreateOrderClick }) => {
+  const dispatch = useDispatch();
+  const { bun, ingredients } = useSelector((state) => state.burgerConstructor);
+
+  const [{ draggedItem }, dropRef] = useDrop(() => ({
+    accept: 'ingredient',
+    drop: (item) => {
+      dispatch(addIngredientById(item.id));
+    },
+    collect: (monitor) => ({
+      draggedItem: monitor.getItem(),
+    }),
+  }));
+
+  const removeIngredientHandler = (constructorId) => {
+    dispatch(removeIngredient(constructorId));
+  };
+
+  const finalPrice = useSelector(getTotalPriceSelector);
 
   return (
     <section className={`${styles.burger_constructor} pb-10`}>
-      <div className={styles.ingredients}>
-        <>
-          {edgeIngreds.length && (
-            <div className={`${styles.edgeIngredient} pr-4`}>
-              <ConstructorElement
-                isLocked={true}
-                type="top"
-                price={edgeIngreds[0].price}
-                text={`${edgeIngreds[0].name} (верх)`}
-                thumbnail={edgeIngreds[0].image}
-              />
-            </div>
-          )}
-          <div className={styles.middleIngredients}>
-            {middleIngreds.map((ingredient) => (
-              <div key={ingredient._id} className={styles.middleIngredient}>
-                <DragIcon type="primary" />
+      <div className={styles.ingredients} ref={dropRef}>
+        {
+          <>
+            {bun ? (
+              <div className={`${styles.edgeIngredient} pr-4`}>
                 <ConstructorElement
-                  text={ingredient.name}
-                  price={ingredient.price}
-                  thumbnail={ingredient.image}
+                  type="top"
+                  isLocked={true}
+                  text={`${bun.name} (верх)`}
+                  thumbnail={bun.image}
                 />
               </div>
-            ))}
-          </div>
-
-          {edgeIngreds.length && (
-            <div className={`${styles.edgeIngredient} pr-4`}>
-              <ConstructorElement
-                isLocked={true}
+            ) : (
+              <ConstructorArea
+                type="top"
+                droppable={draggedItem && draggedItem.type === 'bun'}
+              >
+                Пожалуйста, выберите булку
+              </ConstructorArea>
+            )}
+            {ingredients.length ? (
+              <div className={styles.middleIngredients}>
+                {ingredients.map((el, index) => (
+                  <SortableWrap
+                    key={el.constructorId}
+                    id={el.constructorId}
+                    index={index}
+                  >
+                    <div className={styles.middleIngredient}>
+                      <DragIcon type="primary" />
+                      <ConstructorElement
+                        text={el.name}
+                        price={el.price}
+                        thumbnail={el.image}
+                        handleClose={() => removeIngredientHandler(el.constructorId)}
+                      />
+                    </div>
+                  </SortableWrap>
+                ))}
+              </div>
+            ) : (
+              <ConstructorArea droppable={draggedItem && draggedItem.type !== 'bun'}>
+                Добавьте ингредиенты
+              </ConstructorArea>
+            )}
+            {bun ? (
+              <div className={`${styles.edgeIngredient} pr-4`}>
+                <ConstructorElement
+                  type="bottom"
+                  isLocked={true}
+                  text={`${bun.name} (низ)`}
+                  price={bun.price}
+                  thumbnail={bun.image}
+                />
+              </div>
+            ) : (
+              <ConstructorArea
                 type="bottom"
-                price={edgeIngreds[0].price}
-                text={`${edgeIngreds[0].name} (низ)`}
-                thumbnail={edgeIngreds[0].image}
-              />
-            </div>
-          )}
-        </>
+                droppable={draggedItem && draggedItem.type === 'bun'}
+              >
+                Пожалуйста, выберите булку
+              </ConstructorArea>
+            )}
+          </>
+        }
       </div>
       <div className={`${styles.bottomWrap} pr-4`}>
         <div className={styles.priceInfo}>
-          <span className="text text_type_digits-medium mr-2">610</span>
+          <span className="text text_type_digits-medium mr-2">{finalPrice}</span>
           <CurrencyIcon className={styles.priceInfo__icon} type="primary" />
         </div>
         <Button
@@ -63,8 +116,9 @@ export const BurgerConstructor = ({ ingredients, onCreateOrderClick }) => {
           type="primary"
           size="medium"
           extraClass="ml-10"
+          disabled={finalPrice === 0}
         >
-          Оформить заказ
+          Подтвердить заказ
         </Button>
       </div>
     </section>
