@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+import checkResponse from '@utils/check-response';
 import { INGREDIENTS_URL } from '@utils/constants';
 
 const initialState = {
@@ -11,11 +12,7 @@ const initialState = {
 export const fetchIngredients = createAsyncThunk(
   'ingredients/fetchIngredients',
   async () => {
-    const response = await fetch(INGREDIENTS_URL);
-    if (!response.ok) {
-      throw new Error('Failed to load ingredients from the server');
-    }
-    const data = await response.json();
+    const data = await fetch(INGREDIENTS_URL).then(checkResponse);
     return data.data;
   }
 );

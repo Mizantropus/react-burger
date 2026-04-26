@@ -2,14 +2,15 @@ import { Tab } from '@krgaa/react-developer-burger-ui-components';
 import { useRef, useState, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-import { selectIngredientsCount } from '@services/burgerConstructor.jsx';
+import { selectIngredientsCount } from '@services/burgerConstructor';
 
 import { Ingredient } from '../ingredient/ingredient';
 
 import styles from './burger-ingredients.module.css';
 
-export const BurgerIngredients = ({ ingredients, onIngredientClick }) => {
+export const BurgerIngredients = ({ onIngredientClick }) => {
   const headerRefs = useRef({});
+  const { ingredients } = useSelector((state) => state.ingredients);
   const ingredientsTabContentRef = useRef(null);
   const [activeTab, setActiveTab] = useState('Булки');
   const setHeaderRef = useCallback(

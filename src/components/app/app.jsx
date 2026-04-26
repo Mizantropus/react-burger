@@ -61,10 +61,7 @@ export const App = () => {
           </h1>
           <main className={`${styles.main} pl-5 pr-5`}>
             <DndProvider backend={HTML5Backend}>
-              <BurgerIngredients
-                ingredients={ingredients}
-                onIngredientClick={onIngredientClick}
-              />
+              <BurgerIngredients onIngredientClick={onIngredientClick} />
               <BurgerConstructor onCreateOrderClick={onCreateOrderClick} />
             </DndProvider>
           </main>
