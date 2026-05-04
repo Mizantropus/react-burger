@@ -1,0 +1,42 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+
+import checkResponse from '@utils/check-response';
+import { INGREDIENTS_URL } from '@utils/constants';
+
+const initialState = {
+  ingredients: [],
+  loading: false,
+  error: null,
+};
+
+export const fetchIngredients = createAsyncThunk(
+  'ingredients/fetchIngredients',
+  async () => {
+    const data = await fetch(INGREDIENTS_URL).then(checkResponse);
+    return data.data;
+  }
+);
+
+const ingredientsSlice = createSlice({
+  name: 'ingredients',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchIngredients.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchIngredients.fulfilled, (state, action) => {
+        state.loading = false;
+        state.ingredients = action.payload;
+      })
+      .addCase(fetchIngredients.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || 'Failed to load ingredients from the server';
+      });
+  },
+});
+
+export default ingredientsSlice.reducer;

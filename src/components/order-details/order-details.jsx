@@ -1,11 +1,15 @@
 import { CheckMarkIcon } from '@krgaa/react-developer-burger-ui-components';
+import { useSelector } from 'react-redux';
 
 import styles from './order-details.module.css';
 
 export const OrderDetails = () => {
+  const orderNumber = useSelector((state) => state.order.orderCode);
   return (
     <div className={`${styles.order} pt-20`}>
-      <p className={`${styles.order__id}  mb-8 text text_type_digits-large`}>034536</p>
+      <p className={`${styles.order__id}  mb-8 text text_type_digits-large`}>
+        {orderNumber}
+      </p>
       <p className="mb-15 text text_type_main-medium">идентификатор заказа</p>
       <div className="mb-15">
         <div className={`${styles.order__tickiconwrap}`}>

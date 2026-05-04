@@ -1,0 +1,36 @@
+.container {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 536px;
+  margin-left: 64px;
+  padding: 16px 24px;
+  color: #f2f2f3;
+  font-size: 16px;
+  font-family: 'Jet Brains Mono', serif;
+  line-height: 1.2;
+  text-align: center;
+  background: var(--background-element);
+  border-radius: var(--common-border-radius-s);
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+}
+
+.containerDroppable {
+  border: 1px dashed var(--colors-interface-accent);
+}
+
+.containerTop {
+  border-bottom-right-radius: 15px;
+  border-bottom-left-radius: 15px;
+}
+
+.containerBottom {
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
