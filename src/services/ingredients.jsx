@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import checkResponse from '@utils/check-response';
 import { INGREDIENTS_URL } from '@utils/constants';
+import { checkResponse } from '@utils/http-request';
 
 const initialState = {
   ingredients: [],

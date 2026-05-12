@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 
+import authReducer from '@services/auth';
 import burgerConstructorReducer from '@services/burgerConstructor';
 import ingredientDetailsReducer from '@services/ingredientDetails';
 import ingredientsReducer from '@services/ingredients';
@@ -11,6 +12,7 @@ export const store = configureStore({
     burgerConstructor: burgerConstructorReducer,
     order: orderReducer,
     ingredientDetails: ingredientDetailsReducer,
+    auth: authReducer,
   },
   devTools: process.env.NODE_ENV !== 'production',
 });

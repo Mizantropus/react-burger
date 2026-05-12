@@ -2,7 +2,27 @@ body {
   margin: 0;
 }
 
-/* Fix for scrollbar */
+* {
+  box-sizing: border-box;
+}
+
+.td-none {
+  text-decoration: none;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text_color_secondary {
+  color: rgb(133 133 173 / 40%);
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 
 @supports (scrollbar-color: auto) {
   .custom-scroll {
