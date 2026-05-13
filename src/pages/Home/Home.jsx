@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import { BurgerConstructor } from '@components/burger-constructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
-import { IngredientDetails } from '@components/ingredient-details/ingredient-details';
 import { Modal } from '@components/modal/modal';
 import { OrderDetails } from '@components/order-details/order-details';
 import {
@@ -20,7 +20,6 @@ import styles from './home.module.css';
 
 export const Home = () => {
   const [isModalOrderOpen, setIsModalOrderOpen] = useState(false);
-  const [isModalIngredientOpen, setIsModalIngredientOpen] = useState(false);
   const isSendingOrder = useSelector((state) => state.order.loading);
 
   const dispatch = useDispatch();
@@ -36,10 +35,13 @@ export const Home = () => {
     setIsModalOrderOpen(true);
   };
 
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const onIngredientClick = (id) => {
     const ingredient = ingredients.find((ing) => ing._id === id);
     dispatch(setIngredientDetails({ ...ingredient, image: ingredient.image_large }));
-    setIsModalIngredientOpen(true);
+    navigate(`/ingredient/${id}`, { state: { background: location } });
   };
 
   const closeIngredientModal = () => {
@@ -62,11 +64,6 @@ export const Home = () => {
               <BurgerConstructor onCreateOrderClick={onCreateOrderClick} />
             </DndProvider>
           </main>
-          {isModalIngredientOpen && (
-            <Modal closeHandler={() => setIsModalIngredientOpen(false)}>
-              <IngredientDetails />
-            </Modal>
-          )}
           {isModalOrderOpen && (
             <Modal closeHandler={closeIngredientModal}>
               <OrderDetails />

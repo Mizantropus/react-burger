@@ -1,27 +1,23 @@
 import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 
 import { Preloader } from '@components/preloader/preloader';
-import { fetchIngredients } from '@services/ingredients';
 
 import styles from './Ingredient.module.css';
 
 export const Ingredient = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { ingredientId } = useParams();
   const [ingredient, setIngredient] = useState(null);
   const { loading: isLoadingIngredients } = useSelector((state) => state.ingredients);
+  const allIngredients = useSelector((state) => state.ingredients.ingredients) || [];
 
   useEffect(() => {
     const loadIngredients = async () => {
       try {
-        const fetchIngredientsRes = await dispatch(fetchIngredients()).unwrap();
-        const ingredients = Array.isArray(fetchIngredientsRes)
-          ? fetchIngredientsRes
-          : fetchIngredientsRes?.data || [];
-        const found = ingredients.find((ingr) => ingr._id === ingredientId);
+        if (isLoadingIngredients) return;
+        const found = allIngredients.find((ingr) => ingr._id === ingredientId);
         if (found) {
           setIngredient(found);
         } else {
@@ -33,7 +29,7 @@ export const Ingredient = () => {
       }
     };
     loadIngredients();
-  }, [dispatch, navigate, ingredientId]);
+  }, [allIngredients, ingredientId, isLoadingIngredients, navigate]);
   return (
     <>
       {isLoadingIngredients ? (

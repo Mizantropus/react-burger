@@ -1,10 +1,31 @@
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
+
+import { setIngredientDetails } from '@services/ingredientDetails';
 
 import styles from './ingredient-details.module.css';
 
 export const IngredientDetails = () => {
+  const dispatch = useDispatch();
+  const { ingredientId } = useParams();
+
   const ingredient =
     useSelector((state) => state.ingredientDetails.ingredientDetails) || {};
+  const allIngredients = useSelector((state) => state.ingredients.ingredients) || [];
+
+  useEffect(() => {
+    if (
+      (ingredient == null || !ingredient._id) &&
+      ingredientId &&
+      allIngredients.length
+    ) {
+      const found = allIngredients.find((i) => i._id === ingredientId);
+      if (found) {
+        dispatch(setIngredientDetails({ ...found, image: found.image_large }));
+      }
+    }
+  }, [ingredient, ingredientId, allIngredients, dispatch]);
 
   return (
     <div className="pt-3 pb-5">

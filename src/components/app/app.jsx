@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 
@@ -15,6 +16,7 @@ import { Profile } from '@pages/Profile/Profile';
 import { Register } from '@pages/Register/Register';
 import { ResetPassword } from '@pages/ResetPassword/ResetPassword';
 import { checkIfUserAuthed } from '@services/auth';
+import { fetchIngredients } from '@services/ingredients';
 
 import styles from './app.module.css';
 
@@ -24,6 +26,10 @@ export const App = () => {
   const background = location.state && location.state.background;
   const dispatch = useDispatch();
   dispatch(checkIfUserAuthed());
+
+  useEffect(() => {
+    dispatch(fetchIngredients());
+  }, [dispatch]);
 
   const handleModalClose = () => {
     navigate(-1);
