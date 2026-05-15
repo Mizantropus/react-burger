@@ -1,18 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { INGREDIENTS_URL } from '@utils/constants';
-import { checkResponse } from '@utils/http-request';
+import { makeRequest } from '@utils/http-request';
 
 const initialState = {
   ingredients: [],
-  loading: false,
+  loading: true,
   error: null,
 };
 
 export const fetchIngredients = createAsyncThunk(
   'ingredients/fetchIngredients',
   async () => {
-    const data = await fetch(INGREDIENTS_URL).then(checkResponse);
+    const data = await makeRequest('api/ingredients');
     return data.data;
   }
 );

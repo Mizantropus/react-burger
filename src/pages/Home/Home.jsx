@@ -1,5 +1,5 @@
 import { Preloader } from '@krgaa/react-developer-burger-ui-components';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,7 +13,6 @@ import {
   setIngredientDetails,
   clearIngredientDetails,
 } from '@services/ingredientDetails';
-import { fetchIngredients } from '@services/ingredients';
 import { sendOrder } from '@services/order';
 
 import styles from './home.module.css';
@@ -25,10 +24,6 @@ export const Home = () => {
   const dispatch = useDispatch();
 
   const { ingredients, loading: isLoading } = useSelector((state) => state.ingredients);
-
-  useEffect(() => {
-    dispatch(fetchIngredients());
-  }, [dispatch]);
 
   const onCreateOrderClick = async () => {
     await dispatch(sendOrder());

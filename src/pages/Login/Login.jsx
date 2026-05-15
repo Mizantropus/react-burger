@@ -1,7 +1,7 @@
 import { Input, Button } from '@krgaa/react-developer-burger-ui-components';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 import { Preloader } from '@components/preloader/preloader';
 import { login } from '@services/auth';
@@ -10,6 +10,8 @@ import styles from './Login.module.css';
 
 export const Login = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -21,6 +23,8 @@ export const Login = () => {
     setShowPreloader(true);
     try {
       await dispatch(login({ email, password })).unwrap();
+      const returnTo = location?.state?.from || '/';
+      navigate(returnTo, { replace: true });
     } catch (error) {
       setErrorMsg(
         `Ошибка: ${Object.hasOwnProperty.call(error, 'message') ? error.message : 'Неизвестная ошибка'}.`

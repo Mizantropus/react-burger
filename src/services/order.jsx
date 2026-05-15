@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { ORDERS_URL } from '@utils/constants';
-import { checkResponse } from '@utils/http-request';
+import { makeRequest } from '@utils/http-request';
 
 const initialState = {
   orderCode: '',
@@ -26,7 +26,7 @@ export const sendOrder = createAsyncThunk('order/sendOrder', async (_, { getStat
     bun._id,
   ];
 
-  const data = await fetch(ORDERS_URL, {
+  const data = await makeRequest(ORDERS_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ export const sendOrder = createAsyncThunk('order/sendOrder', async (_, { getStat
     body: JSON.stringify({
       ingredients: ingredientsIds,
     }),
-  }).then(checkResponse);
+  });
   return String(data.order.number);
 });
 

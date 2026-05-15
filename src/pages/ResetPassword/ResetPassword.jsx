@@ -1,24 +1,30 @@
 import { Input, Button } from '@krgaa/react-developer-burger-ui-components';
 import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation, Navigate } from 'react-router-dom';
 
 import { Preloader } from '@components/preloader/preloader';
-import { resetPassword } from '@utils/auth-api';
+import { resetPasswordVerification } from '@utils/auth-api';
 
 import styles from './ResetPassword.module.css';
 
 export const ResetPassword = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const location = useLocation();
+  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [showPreloader, setShowPreloader] = useState(false);
+
+  if (!location?.state?.fromForgot) {
+    return <Navigate to="/forgot-password" replace />;
+  }
 
   const formSubmitHandler = async (event) => {
     event.preventDefault();
     setShowPreloader(true);
     try {
-      await resetPassword({ email });
-      navigate('/reset-password-success');
+      await resetPasswordVerification({ password, token: code });
+      navigate('/login');
     } catch (error) {
       setErrorMsg(
         `Ошибка: ${Object.hasOwnProperty.call(error, 'message') ? error.message : 'Неизвестная ошибка'}.`
@@ -37,15 +43,24 @@ export const ResetPassword = () => {
           <h1 className="text text_type_main-medium mb-6">Восстановление пароля</h1>
           <form onSubmit={formSubmitHandler} className={styles.form}>
             <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Укажите e-mail"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Введите новый пароль"
               extraClass="mb-6"
-              name={'email'}
+              icon={'ShowIcon'}
+              name={'password'}
             />
-            <Button disabled={!email} htmlType="submit" type="primary" size="large">
-              Восстановить
+            <Input
+              type="text"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="Введите код из письма"
+              extraClass="mb-6"
+              name={'name'}
+            />
+            <Button htmlType="submit" type="primary" size="large">
+              Сохранить
             </Button>
           </form>
           <div className={styles.bottomTextWrap}>
@@ -54,13 +69,13 @@ export const ResetPassword = () => {
                 {errorMsg}
               </p>
             )}
+            <p className="text text_type_main-default text_color_inactive mt-20">
+              Вспомнили пароль?{' '}
+              <NavLink to="/login" className="text_color_accent td-none">
+                Войти
+              </NavLink>
+            </p>
           </div>
-          <p className="text text_type_main-default text_color_inactive mt-20">
-            Вспомнили пароль?{' '}
-          </p>
-          <NavLink to="/login" className="text_color_accent td-none">
-            Войти
-          </NavLink>
         </div>
       )}
     </>

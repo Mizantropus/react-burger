@@ -58,10 +58,7 @@ export const App = () => {
             element={<OnlyAuthed component={<Profile />} />}
             path="/profile"
           ></Route>
-          <Route
-            element={<OnlyAuthed component={<Ingredient />} />}
-            path="/ingredient/:ingredientId"
-          ></Route>
+          <Route path="/ingredient/:ingredientId" element={<Ingredient />}></Route>
           <Route
             element={<OnlyAuthed component={<OnWorking />} />}
             path="/profile/orders"

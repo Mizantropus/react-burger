@@ -18,7 +18,7 @@ export const ForgotPassword = () => {
     setShowPreloader(true);
     try {
       await resetPassword({ email });
-      navigate('/reset-password');
+      navigate('/reset-password', { state: { fromForgot: true } });
     } catch (error) {
       setErrorMsg(
         `Ошибка: ${Object.hasOwnProperty.call(error, 'message') ? error.message : 'Неизвестная ошибка'}.`

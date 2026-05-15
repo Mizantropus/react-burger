@@ -18,7 +18,7 @@ export const Profile = () => {
 
   const [name, setName] = useState(nameStore);
   const [email, setEmail] = useState(emailStore);
-  const [password, setPassword] = useState(passwordStore);
+  const [password, setPassword] = useState('');
   const [showActionBtns, setShowActionsBtns] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [showPreloader, setShowPreloader] = useState(false);
@@ -29,26 +29,24 @@ export const Profile = () => {
 
   const inputChangeHandler = (inputName, event) => {
     const value = event.target.value;
-    let haveChanges = false;
-    if (inputName === 'name') {
-      setName(value);
-      haveChanges = value !== nameStore;
-    }
-    if (inputName === 'email') {
-      setEmail(value);
-      haveChanges = value !== emailStore;
-    }
-    if (inputName === 'password') {
-      setPassword(value);
-      haveChanges = value !== passwordStore;
-    }
-    setShowActionsBtns(haveChanges);
+    const nextName = inputName === 'name' ? value : name;
+    const nextEmail = inputName === 'email' ? value : email;
+    const nextPassword = inputName === 'password' ? value : password;
+
+    if (inputName === 'name') setName(value);
+    if (inputName === 'email') setEmail(value);
+    if (inputName === 'password') setPassword(value);
+
+    const nameChanged = nextName !== nameStore;
+    const emailChanged = nextEmail !== emailStore;
+    const passwordChanged = nextPassword !== '' && nextPassword !== passwordStore;
+
+    setShowActionsBtns(nameChanged || emailChanged || passwordChanged);
   };
 
   const cancelChangesBtnHandler = () => {
     setName(nameStore);
     setEmail(emailStore);
-    setPassword(passwordStore);
     setShowActionsBtns(false);
   };
 
@@ -57,13 +55,9 @@ export const Profile = () => {
     setShowPreloader(true);
     setErrorMsg('');
     try {
-      await dispatch(
-        updateUserData({
-          name,
-          email,
-          password,
-        })
-      ).unwrap();
+      const payload = { name, email };
+      if (password) payload.password = password;
+      await dispatch(updateUserData(payload)).unwrap();
     } catch (error) {
       setErrorMsg(
         `Ошибка: ${Object.hasOwnProperty.call(error, 'message') ? error.message : 'Неизвестная ошибка'}.`
@@ -72,6 +66,15 @@ export const Profile = () => {
       setShowPreloader(false);
     }
   };
+  const isNameChanged = name !== nameStore;
+  const isEmailChanged = email !== emailStore;
+  const isPasswordChanged = password !== '' && password !== passwordStore;
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isPasswordValid = password === '' ? true : password.length >= 6;
+  const saveEnabled =
+    (isNameChanged || isEmailChanged || isPasswordChanged) &&
+    (isEmailChanged ? isEmailValid : true) &&
+    (isPasswordChanged ? isPasswordValid : true);
 
   return (
     <>
@@ -152,7 +155,7 @@ export const Profile = () => {
                   Отмена
                 </Button>
                 <Button
-                  disabled={!(name && email && password)}
+                  disabled={!saveEnabled}
                   htmlType="submit"
                   type="primary"
                   size="medium"
