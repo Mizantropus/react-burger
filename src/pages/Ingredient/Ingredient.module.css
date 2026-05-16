@@ -1,0 +1,32 @@
+.ingredientInfo__imagewrap {
+  display: flex;
+  justify-content: center;
+}
+
+.ingredientInfo__image {
+  width: 480px;
+  height: 240px;
+}
+
+.ingredientInfo__name {
+  text-align: center;
+}
+
+.ingredientInfo__facts {
+  display: flex;
+  justify-content: space-between;
+}
+
+.fact__block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.ingredientWrap {
+  width: 640px;
+  margin: 0 auto;
+  margin-top: 210px;
+  text-align: center;
+}

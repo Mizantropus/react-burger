@@ -1,0 +1,26 @@
+.profileWrapper {
+  display: flex;
+  justify-content: flex-start;
+  row-gap: 60px;
+  width: 1240px;
+  margin-top: 120px;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 16px;
+  padding-left: 16px;
+}
+
+.profileLeftCol {
+  width: 360px;
+}
+
+.profileActionBtns {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.exitBtn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}

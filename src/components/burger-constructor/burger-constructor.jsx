@@ -6,9 +6,11 @@ import {
 } from '@krgaa/react-developer-burger-ui-components';
 import { useDrop } from 'react-dnd';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import ConstructorArea from '@/components/constructor-area/constructor-area';
 import SortableWrap from '@components/sortable-wrap/sortable-wrap';
+import { getUser } from '@services/auth';
 import {
   removeIngredient,
   getTotalPriceSelector,
@@ -20,6 +22,9 @@ import styles from './burger-constructor.module.css';
 export const BurgerConstructor = ({ onCreateOrderClick }) => {
   const dispatch = useDispatch();
   const { bun, ingredients } = useSelector((state) => state.burgerConstructor);
+  const user = useSelector(getUser);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [{ draggedItem }, dropRef] = useDrop(() => ({
     accept: 'ingredient',
@@ -111,7 +116,13 @@ export const BurgerConstructor = ({ onCreateOrderClick }) => {
           <CurrencyIcon className={styles.priceInfo__icon} type="primary" />
         </div>
         <Button
-          onClick={onCreateOrderClick}
+          onClick={() => {
+            if (!user) {
+              navigate('/login', { state: { from: location.pathname } });
+              return;
+            }
+            onCreateOrderClick();
+          }}
           htmlType="button"
           type="primary"
           size="medium"
