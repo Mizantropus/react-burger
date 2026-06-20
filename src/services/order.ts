@@ -1,8 +1,10 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 
+import { refreshToken } from '@utils/auth-api';
 import { ORDERS_URL } from '@utils/constants';
 import { makeRequest } from '@utils/http-request';
 import * as orderApi from '@utils/order-api';
+// import { getCookie } from '@utils/utils';
 
 import type { TOrder, TOrderResponse } from '@/types';
 
@@ -49,11 +51,14 @@ export const sendOrder = createAsyncThunk<string, void, TOrderThunkApi>(
       ...ingredients.map((ingredient) => ingredient._id),
       bun._id,
     ];
-
+    await refreshToken();
+    const accessToken = localStorage.getItem('accessToken');
+    // const accessToken = getCookie('token');
     const data = await makeRequest<unknown, TOrderResponse>(ORDERS_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: accessToken ?? '',
       },
       body: JSON.stringify({
         ingredients: ingredientsIds,
@@ -91,8 +96,8 @@ const orderSlice = createSlice({
 
 export const loadOrder = createAsyncThunk(
   'order/getOrder',
-  async (number: number, { dispatch }) => {
-    const getOrderResult = await orderApi.loadOrder(number);
+  async (id: string, { dispatch }) => {
+    const getOrderResult = await orderApi.loadOrder(id);
     if (getOrderResult.success) {
       dispatch(setOrderData(getOrderResult.order));
     }

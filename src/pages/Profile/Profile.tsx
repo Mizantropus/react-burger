@@ -3,7 +3,7 @@ import { NavLink, Outlet, matchRoutes } from 'react-router-dom';
 
 import { Preloader } from '@/components/preloader/preloader';
 import { logout } from '@/services/auth';
-import { useAppDispatch } from '@/services/store';
+import { useAppDispatch } from '@/services/hooks';
 
 import type React from 'react';
 

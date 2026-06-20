@@ -9,7 +9,7 @@ import { getIngredientsDict } from '@/services/ingredients';
 import { useAppDispatch, useAppSelector } from '@/services/store';
 import { orderStatusesTranslation, type TOrder } from '@/types';
 import { Preloader } from '@components/preloader/preloader';
-import { loadOrder } from '@services/order';
+import { loadOrders } from '@services/ordersAll';
 
 import styles from './order-info.module.css';
 
@@ -23,6 +23,12 @@ export const OrderInfo = ({ insideModal }: IOrderInfoProps): JSX.Element => {
   const { ingredients, loading: isLoadingIngredients } = useAppSelector(
     (state) => state.ingredients
   );
+  const ordersAll = useAppSelector((s) => s.ordersAll.orders);
+  useEffect(() => {
+    if (!ordersAll || ordersAll.length === 0) {
+      dispatch(loadOrders());
+    }
+  }, [dispatch, ordersAll.length]);
 
   const order = useAppSelector((state) => {
     let foundOrder = state.ordersAll.orders.find(
@@ -35,15 +41,14 @@ export const OrderInfo = ({ insideModal }: IOrderInfoProps): JSX.Element => {
     );
     if (foundOrder) return foundOrder;
 
+    foundOrder = ordersAll.find(
+      (order: TOrder) => order.number === Number(orderNumberRouteParam)
+    );
+    if (foundOrder) return foundOrder;
+
     return state.order.order;
   });
   const ingredientsDict = useAppSelector(getIngredientsDict);
-
-  useEffect(() => {
-    if (!order) {
-      dispatch(loadOrder(Number(orderNumberRouteParam)));
-    }
-  }, [dispatch, order, orderNumberRouteParam, ingredients]);
 
   if (isLoadingIngredients || !order || !ingredients) {
     return <Preloader />;

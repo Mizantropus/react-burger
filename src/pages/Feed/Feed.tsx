@@ -8,25 +8,21 @@ import { getIngredientsDict } from '@services/ingredients';
 import { selectPendingOrders, selectCreatedOrders } from '@services/ordersAll';
 import { wsOrdersAllUrl } from '@utils/constants';
 
-import type { RootState } from '@/services/store';
-
 import styles from './Feed.module.css';
 
 export const FeedPage = (): React.JSX.Element => {
   const dispatch = useAppDispatch();
   const { ingredients, loading: isLoadingIngredients } = useAppSelector(
-    (state: RootState) => state.ingredients
+    (state) => state.ingredients
   );
 
-  const pendingOrders = useAppSelector((state: RootState) => selectPendingOrders(state));
-  const createdOrders = useAppSelector((state: RootState) => selectCreatedOrders(state));
+  const pendingOrders = useAppSelector((state) => selectPendingOrders(state));
+  const createdOrders = useAppSelector((state) => selectCreatedOrders(state));
 
   const { orders, total, totalToday, gotFirstMessage } = useAppSelector(
-    (state: RootState) => state.ordersAll
+    (state) => state.ordersAll
   );
-  const ingredientsDict = useAppSelector((state: RootState) =>
-    getIngredientsDict(state)
-  );
+  const ingredientsDict = useAppSelector((state) => getIngredientsDict(state));
 
   useEffect(() => {
     dispatch(wsConnect(wsOrdersAllUrl));

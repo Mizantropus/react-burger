@@ -20,6 +20,7 @@ import { ResetPassword } from '@pages/ResetPassword/ResetPassword';
 import { checkIfUserAuthed } from '@services/auth';
 import { useAppDispatch } from '@services/hooks';
 import { fetchIngredients } from '@services/ingredients';
+import { fetchOrders } from '@services/ordersAll';
 
 import styles from './app.module.css';
 
@@ -32,6 +33,10 @@ export const App = (): JSX.Element => {
 
   useEffect(() => {
     dispatch(fetchIngredients());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchOrders());
   }, [dispatch]);
 
   const handleModalClose = (): void => {
@@ -61,6 +66,7 @@ export const App = (): JSX.Element => {
           <Route element={<OnlyAuthed component={<Profile />} />} path="/profile">
             <Route element={<ProfileFormTabContent />} path="/profile" />
             <Route element={<ProfileFeedTabContent />} path="/profile/orders" />
+            <Route element={<OrderInfo />} path="/profile/orders/:number" />
           </Route>
           <Route element={<FeedPage />} path="/feed"></Route>
           <Route element={<OrderInfo />} path="/feed/:number"></Route>

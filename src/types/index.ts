@@ -70,6 +70,12 @@ export type TOrderFullResponse = {
   order: TOrder;
 };
 
+export type TOrdersFullResponse = {
+  success: boolean;
+  message?: string;
+  orders: TOrder[];
+};
+
 export type TUpdateUserDataInput = Partial<TUser>;
 
 export type TUpdateResult = {

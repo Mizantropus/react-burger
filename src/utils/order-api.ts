@@ -1,6 +1,11 @@
 import { makeRequest } from './http-request';
 
-import type { TOrderResponse, TOrderFullResponse, TResponseWithExtras } from '@/types';
+import type {
+  TOrderResponse,
+  TOrderFullResponse,
+  TOrdersFullResponse,
+  TResponseWithExtras,
+} from '@/types';
 
 export const createOrder = async (data: {
   ingredients: string[];
@@ -14,9 +19,20 @@ export const createOrder = async (data: {
   });
 };
 
-export const loadOrder = async (number: number): Promise<TOrderFullResponse> => {
+export const loadOrder = async (id: string): Promise<TOrderFullResponse> => {
   const accessToken = localStorage.getItem('accessToken') as string;
-  return makeRequest<unknown, TOrderFullResponse>(`api/orders/${number}`, {
+  return makeRequest<unknown, TOrderFullResponse>(`api/orders/${id}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: accessToken,
+    },
+  });
+};
+
+export const getOrdersApi = async (): Promise<TOrdersFullResponse> => {
+  const accessToken = localStorage.getItem('accessToken') as string;
+  return makeRequest<unknown, TOrdersFullResponse>('api/orders/all', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
