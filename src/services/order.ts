@@ -1,12 +1,15 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 
 import { ORDERS_URL } from '@utils/constants';
 import { makeRequest } from '@utils/http-request';
+import * as orderApi from '@utils/order-api';
 
-import type { TOrderResponse } from '@/types';
+import type { TOrder, TOrderResponse } from '@/types';
 
 type TOrderState = {
   orderCode: string;
+  orderNumber: string;
+  order: TOrder | null;
   loading: boolean;
   error: string | null;
 };
@@ -22,6 +25,8 @@ type TOrderThunkApi = {
 
 const initialState: TOrderState = {
   orderCode: '',
+  orderNumber: '',
+  order: null,
   loading: false,
   error: null,
 };
@@ -58,10 +63,15 @@ export const sendOrder = createAsyncThunk<string, void, TOrderThunkApi>(
   }
 );
 
-const ingredientsSlice = createSlice({
+const orderSlice = createSlice({
   name: 'order',
   initialState,
-  reducers: {},
+  reducers: {
+    setOrderData: (state, action: PayloadAction<TOrder>) => {
+      state.order = action.payload;
+      state.orderNumber = String(action.payload.number);
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(sendOrder.pending, (state) => {
@@ -79,4 +89,16 @@ const ingredientsSlice = createSlice({
   },
 });
 
-export default ingredientsSlice.reducer;
+export const loadOrder = createAsyncThunk(
+  'order/getOrder',
+  async (number: number, { dispatch }) => {
+    const getOrderResult = await orderApi.loadOrder(number);
+    if (getOrderResult.success) {
+      dispatch(setOrderData(getOrderResult.order));
+    }
+    return getOrderResult;
+  }
+);
+
+export default orderSlice.reducer;
+export const { setOrderData } = orderSlice.actions;

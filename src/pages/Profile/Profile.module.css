@@ -24,3 +24,13 @@
   border: none;
   cursor: pointer;
 }
+
+.text_color_primary {
+  color: #fff !important;
+}
+
+.contentTabWrap {
+  /* flex-grow: 1; */
+  height: 100%;
+  overflow-y: auto;
+}

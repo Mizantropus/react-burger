@@ -64,6 +64,12 @@ export type TOrderResponse = {
   };
 };
 
+export type TOrderFullResponse = {
+  success: boolean;
+  message?: string;
+  order: TOrder;
+};
+
 export type TUpdateUserDataInput = Partial<TUser>;
 
 export type TUpdateResult = {
@@ -78,10 +84,38 @@ export type TLoginResult = {
   message?: string;
 };
 
-export type TAuthApiResponse = TResponseWithExtras<{ user: TUser }, TAuthTokens>;
+export type TAuthApiResponse = TResponseWithExtras<
+  unknown,
+  TAuthTokens & { user: TUser }
+>;
 
 export type TIngredientGroups = {
   Булки: TIngredient[];
   Начинки: TIngredient[];
   Соусы: TIngredient[];
 };
+
+export enum orderStatusesTranslation {
+  done = 'Выполнен',
+  pending = 'Готовится',
+  created = 'Создан',
+}
+
+export type TOrder = {
+  _id: string;
+  name: string;
+  status: keyof typeof orderStatusesTranslation;
+  number: number;
+  createdAt: string;
+  updatedAt: string;
+  ingredients: string[];
+};
+
+export enum WebSocketStatus {
+  ONLINE,
+  OFFLINE,
+}
+
+export const OrderStatusPending = 'pending';
+export const OrderStatusDone = 'done';
+export const OrderStatusCreated = 'created';

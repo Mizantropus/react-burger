@@ -1,5 +1,6 @@
 .modal__box {
   position: relative;
+  z-index: 999;
   width: 720px;
   max-height: 80vh;
   margin: auto;
