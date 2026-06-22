@@ -15,6 +15,8 @@ import {
 } from '@services/ingredientDetails';
 import { sendOrder } from '@services/order';
 
+import type { TIngredient } from '@/types';
+
 import styles from './home.module.css';
 
 export const Home = (): JSX.Element => {
@@ -36,7 +38,7 @@ export const Home = (): JSX.Element => {
   const location = useLocation();
 
   const onIngredientClick = (id: string): void => {
-    const ingredient = ingredients.find((ing) => ing._id === id);
+    const ingredient = ingredients.find((ing: TIngredient) => ing._id === id);
     if (!ingredient) {
       return;
     }

@@ -4,19 +4,23 @@ import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { AppHeader } from '@components/app-header/app-header';
 import { IngredientDetails } from '@components/ingredient-details/ingredient-details';
 import { Modal } from '@components/modal/modal';
+import { OrderInfo } from '@components/order-info/order-info';
+import { ProfileFeedTabContent } from '@components/profile-feed/profile-feed';
+import { ProfileFormTabContent } from '@components/profile-form/profile-form';
 import { OnlyAuthed, OnlyUnauthed } from '@components/protected-route/protected-route';
+import { FeedPage } from '@pages/Feed/Feed';
 import { ForgotPassword } from '@pages/ForgotPassword/ForgotPassword';
 import { Home } from '@pages/Home/Home';
 import { Ingredient } from '@pages/Ingredient/Ingredient';
 import { Login } from '@pages/Login/Login';
 import { NotFound } from '@pages/NotFound/NotFound';
-import { OnWorking } from '@pages/OnWorking/OnWorking';
 import { Profile } from '@pages/Profile/Profile';
 import { Register } from '@pages/Register/Register';
 import { ResetPassword } from '@pages/ResetPassword/ResetPassword';
 import { checkIfUserAuthed } from '@services/auth';
 import { useAppDispatch } from '@services/hooks';
 import { fetchIngredients } from '@services/ingredients';
+import { fetchOrders } from '@services/ordersAll';
 
 import styles from './app.module.css';
 
@@ -29,6 +33,10 @@ export const App = (): JSX.Element => {
 
   useEffect(() => {
     dispatch(fetchIngredients());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchOrders());
   }, [dispatch]);
 
   const handleModalClose = (): void => {
@@ -54,16 +62,14 @@ export const App = (): JSX.Element => {
             element={<OnlyUnauthed component={<ResetPassword />} />}
             path="/reset-password"
           ></Route>
-          <Route
-            element={<OnlyAuthed component={<Profile />} />}
-            path="/profile"
-          ></Route>
           <Route path="/ingredient/:ingredientId" element={<Ingredient />}></Route>
-          <Route
-            element={<OnlyAuthed component={<OnWorking />} />}
-            path="/profile/orders"
-          ></Route>
-          <Route element={<OnlyAuthed component={<OnWorking />} />} path="/feed"></Route>
+          <Route element={<OnlyAuthed component={<Profile />} />} path="/profile">
+            <Route element={<ProfileFormTabContent />} path="/profile" />
+            <Route element={<ProfileFeedTabContent />} path="/profile/orders" />
+            <Route element={<OrderInfo />} path="/profile/orders/:number" />
+          </Route>
+          <Route element={<FeedPage />} path="/feed"></Route>
+          <Route element={<OrderInfo />} path="/feed/:number"></Route>
           <Route element={<OnlyAuthed component={<NotFound />} />} path="*"></Route>
         </Routes>
 
@@ -74,6 +80,22 @@ export const App = (): JSX.Element => {
               element={
                 <Modal closeHandler={handleModalClose}>
                   <IngredientDetails />
+                </Modal>
+              }
+            />
+            <Route
+              path="/feed/:number"
+              element={
+                <Modal closeHandler={handleModalClose}>
+                  <OrderInfo />
+                </Modal>
+              }
+            />
+            <Route
+              path="/profile/orders/:number"
+              element={
+                <Modal closeHandler={handleModalClose}>
+                  <OrderInfo insideModal={true} />
                 </Modal>
               }
             />

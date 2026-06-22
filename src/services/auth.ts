@@ -49,7 +49,8 @@ export const login = createAsyncThunk<TAuthApiResponse, TLoginData>(
       if (!logInResult.success) {
         throw new Error(logInResult.message || 'Login failed');
       }
-      const user = logInResult.data?.user;
+      const user = logInResult.user;
+      // const user = (logInResult as any).user ?? (logInResult as any).data?.user;
       if (!user) {
         throw new Error('User data is missing in response');
       }

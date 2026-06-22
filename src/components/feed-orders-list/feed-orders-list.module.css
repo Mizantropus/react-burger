@@ -1,0 +1,63 @@
+.feedItemTop {
+  display: flex;
+  justify-content: space-between;
+}
+
+.feedItemBottom {
+  display: flex;
+  justify-content: space-between;
+}
+
+.feedItemPriceWrap {
+  display: flex;
+  align-items: center;
+}
+
+.feedItemLink {
+  color: var(--text-primary-color);
+  text-decoration: none;
+}
+
+.feedItem {
+  display: block;
+  padding: 24px;
+  background: #1c1c21;
+  border-radius: 40px;
+  box-shadow:
+    0 4px 8px rgb(0 0 0 / 4%),
+    0 0 2px rgb(0 0 0 / 6%),
+    0 0 1px rgb(0 0 0 / 4%);
+}
+
+.feedIngredientImages {
+  display: flex;
+}
+
+.feedIngredientImage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 64px;
+  height: 64px;
+  background: #131316;
+  border: 2px solid #4c4cff;
+  border-radius: 50%;
+}
+
+.feedIngredientImage img {
+  width: 80%;
+  height: 80%;
+  object-fit: cover;
+}
+
+.feedIngredientImageMoreCount {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #1c1c21;
+  border-radius: 50%;
+  opacity: 0.6;
+}

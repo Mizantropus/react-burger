@@ -27,6 +27,7 @@ export default defineConfig([
       'package*.json',
       'public',
       'storybook-static',
+      'src/services/store.ts'
     ],
   },
   js.configs.recommended,

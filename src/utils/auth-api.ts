@@ -7,11 +7,14 @@ import type {
   TResetPasswordData,
   TResponseBody,
   TResponseWithExtras,
+  TAuthApiResponse,
   TReqToResetPasswordData,
   TUser,
 } from '@/types';
 
-async function refreshToken(): Promise<TResponseWithExtras<unknown, TAuthTokens>> {
+export async function refreshToken(): Promise<
+  TResponseWithExtras<unknown, TAuthTokens>
+> {
   const refreshData = await makeRequest<unknown, TAuthTokens>('api/auth/token', {
     method: 'POST',
     headers: {
@@ -45,9 +48,7 @@ export async function fetchWithRefresh<
   }
 }
 
-export async function logIn(
-  loginData: TLoginData
-): Promise<TResponseWithExtras<{ user: TUser }, TAuthTokens>> {
+export async function logIn(loginData: TLoginData): Promise<TAuthApiResponse> {
   const result = await makeRequest<{ user: TUser }, TAuthTokens>('api/auth/login', {
     method: 'POST',
     headers: {
@@ -60,7 +61,6 @@ export async function logIn(
     localStorage.setItem('accessToken', String(result.accessToken));
     localStorage.setItem('refreshToken', String(result.refreshToken));
   }
-
   return result;
 }
 
@@ -81,9 +81,7 @@ export async function logOut(): Promise<TResponseBody<unknown>> {
   return result;
 }
 
-export async function register(
-  registerData: TRegisterData
-): Promise<TResponseWithExtras<{ user: TUser }, TAuthTokens>> {
+export async function register(registerData: TRegisterData): Promise<TAuthApiResponse> {
   const result = await makeRequest<{ user: TUser }, TAuthTokens>('api/auth/register', {
     method: 'POST',
     headers: {
@@ -96,7 +94,6 @@ export async function register(
     localStorage.setItem('accessToken', String(result.accessToken));
     localStorage.setItem('refreshToken', String(result.refreshToken));
   }
-
   return result;
 }
 
@@ -169,6 +166,5 @@ export async function updateUserData(
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
   }
-
   return fetchWithRefreshResult;
 }
