@@ -1,4 +1,8 @@
-# Стартер на JavaScript для проекта Stellar Burger
+# Stellar Burger
+
+## Ссылка на проект:
+
+[react-burger.fun](https://react-burger.fun/)
 
 ## Процедура создания коммита с проверками
 
