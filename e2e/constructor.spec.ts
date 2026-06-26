@@ -1,10 +1,12 @@
 import { test, expect, type Page } from '@playwright/test';
 
+const ORDER_NUMBER = 1234;
+
 const IdConst = '692889f16bf770001bfeb4d6';
 
 async function openModalWindow(page: Page): Promise<void> {
   await page.locator(`[id="${IdConst}"]`).click();
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(1000);
 }
 
 async function moveItem2Order(
@@ -27,6 +29,30 @@ test.describe('Тестирование процесса создания зак
       url: '**api/ingredients',
       update: false,
     });
+
+    await page.route('**/api/auth/user', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          user: { email: 'test@example.com', name: 'Test User' },
+        }),
+      })
+    );
+
+    await page.route('**/api/auth/token', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          accessToken: 'Bearer testtoken',
+          refreshToken: 'testrefresh',
+        }),
+      })
+    );
+
     await page.goto('/');
   });
 
@@ -34,10 +60,6 @@ test.describe('Тестирование процесса создания зак
     await page.reload();
     await page.waitForTimeout(1000);
 
-    await page.routeFromHAR('./e2e/hars/createOrder.har', {
-      url: '**api/orders',
-      update: false,
-    });
     await moveItem2Order(page);
     await page.waitForTimeout(1000);
     const orderButton = page.getByText('Подтвердить заказ');
@@ -74,26 +96,34 @@ test.describe('Тестирование процесса создания зак
 
   test('создание заказа', async ({ page }) => {
     await page.evaluate(() => {
-      // TODO: Заменить на реальные токены
-      localStorage.setItem('accessToken', 'accessTokenVal');
-      localStorage.setItem('refreshToken', 'refreshTokenVal');
+      localStorage.setItem('accessToken', 'Bearer testtoken');
+      localStorage.setItem('refreshToken', 'testrefresh');
     });
 
-    await page.reload();
-    await page.waitForTimeout(1000);
+    await page.route('**/api/orders', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          order: { number: ORDER_NUMBER },
+        }),
+      })
+    );
 
-    await page.routeFromHAR('./e2e/hars/createOrder.har', {
-      url: '**api/orders',
-      update: false,
-    });
+    await Promise.all([page.waitForResponse('**/api/auth/user'), page.reload()]);
+    await page.waitForLoadState('networkidle');
 
     await moveItem2Order(page);
     await page.waitForTimeout(1000);
+
     const orderButton = page.getByText('Подтвердить заказ');
     await expect(orderButton).toBeVisible();
     await expect(orderButton).toBeEnabled();
     await orderButton.click();
-    await page.waitForTimeout(1000);
+    await page.waitForResponse('**/api/orders');
+
     await expect(page.getByText('идентификатор заказа')).toBeVisible();
+    await expect(page.getByText(String(ORDER_NUMBER))).toBeVisible();
   });
 });
