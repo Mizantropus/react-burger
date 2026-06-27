@@ -17,10 +17,9 @@ async function moveItem2Order(
   const firstItem = page.locator(`[id="${first_id}"]`);
   const secondItem = page.locator(`[id="${second_id}"]`);
   const orderSpace = page.locator('[class*="burger-constructor__ingredients"]');
+  await firstItem.waitFor({ state: 'visible' });
   await firstItem.dragTo(orderSpace);
-  await page.waitForTimeout(500);
   await secondItem.dragTo(orderSpace);
-  await page.waitForTimeout(500);
 }
 
 test.describe('Тестирование процесса создания заказа', () => {
@@ -29,39 +28,21 @@ test.describe('Тестирование процесса создания зак
       url: '**api/ingredients',
       update: false,
     });
-
-    await page.route('**/api/auth/user', (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          success: true,
-          user: { email: 'test@example.com', name: 'Test User' },
-        }),
-      })
-    );
-
-    await page.route('**/api/auth/token', (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          success: true,
-          accessToken: 'Bearer testtoken',
-          refreshToken: 'testrefresh',
-        }),
-      })
-    );
+    await page.routeFromHAR('./e2e/hars/auth.har', {
+      url: '**api/auth/**',
+      update: false,
+    });
+    await page.routeFromHAR('./e2e/hars/createOrder.har', {
+      url: '**api/orders',
+      update: false,
+    });
 
     await page.goto('/');
+    await page.waitForLoadState('networkidle');
   });
 
   test('Перетаскиваем ингредиенты в конструктор', async ({ page }): Promise<void> => {
-    await page.reload();
-    await page.waitForTimeout(1000);
-
     await moveItem2Order(page);
-    await page.waitForTimeout(1000);
     const orderButton = page.getByText('Подтвердить заказ');
     await expect(orderButton).toBeVisible();
     await expect(orderButton).toBeEnabled();
@@ -100,28 +81,18 @@ test.describe('Тестирование процесса создания зак
       localStorage.setItem('refreshToken', 'testrefresh');
     });
 
-    await page.route('**/api/orders', (route) =>
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          success: true,
-          order: { number: ORDER_NUMBER },
-        }),
-      })
-    );
-
     await Promise.all([page.waitForResponse('**/api/auth/user'), page.reload()]);
     await page.waitForLoadState('networkidle');
 
     await moveItem2Order(page);
-    await page.waitForTimeout(1000);
 
     const orderButton = page.getByText('Подтвердить заказ');
     await expect(orderButton).toBeVisible();
     await expect(orderButton).toBeEnabled();
-    await orderButton.click();
-    await page.waitForResponse('**/api/orders');
+    await Promise.all([
+      page.waitForResponse('**/api/orders'),
+      orderButton.click(),
+    ]);
 
     await expect(page.getByText('идентификатор заказа')).toBeVisible();
     await expect(page.getByText(String(ORDER_NUMBER))).toBeVisible();
