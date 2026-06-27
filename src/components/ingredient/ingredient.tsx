@@ -29,7 +29,7 @@ export const Ingredient = ({
     item: { id, type },
   }));
   return (
-    <article className={styles.ingridient} onClick={() => onClickHandler(id)}>
+    <article className={styles.ingridient} id={id} onClick={() => onClickHandler(id)}>
       {quantity > 0 && <Counter count={quantity} size="default" extraClass="m-1" />}
       <img
         ref={dragRef as unknown as React.Ref<HTMLImageElement>}
